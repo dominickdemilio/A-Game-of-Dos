@@ -89,15 +89,20 @@ void playerTurn(hand* currentHand, hand* centerRow, card* deck) {
             scanf("%d, %d", &userInput, &userInput2);
             validPlay(*centerRow->playerHand, userInput, userInput2, currentHand);
         }
-
-
+        else if (i == centerRow->numCards - 1) {
+            break;
+        }
+        
         // NEEDS LOGIC HERE
 
         activeCenterCard = *activeCenterCard.pt;
     }
+    
+    if(centerRow->numCards == 0) {
+        return;
+    }
 
     // AND LOGIC HERE
-
 
     // THIS STUFF IS FOR WHEN THE USER DOES NOT PLAY A CARD, AND HAS TO DRAW
     drawCard(currentHand, &deck);
@@ -139,9 +144,17 @@ int main(void) {
     //Start of Gameplay
     while (!winner) {
         playerTurn(&PlayersHands[playerToAct], &centerRow, deck);
-
+        
+        while (centerRow.numCards < 2) {
+            drawCard(&centerRow, &deck);
+        }
+        
         // NEED MORE GAMEPLAY LOGIC HERE
-
+        
+        
+        // next player
+        playerToAct++;
+        playerToAct = playerToAct % numPlayers;
     }
 
     //frees all dynamically allocated memory and ends function
