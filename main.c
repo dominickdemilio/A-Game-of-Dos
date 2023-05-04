@@ -18,47 +18,51 @@
 #define HANDSIZE 7
 #define MAX_NUM_PLAYERS 6
 
-//draws a card from the deck, receives deck, player's hand, & number of cards in draw pile as input. No output necessary
-void drawCard(hand* array, card *deck) {
-    array->numCards++;   //number of cards in player's hand increases by 1
-    addNewNodeToBeginning(&array->playerHand, *deck);   //copy the top card in the deck to player's hand
-    deleteFirstNode(&deck);   //removes top card from the deck
-}
-
-card* init_deck(void) {
-    int shuffle = 0;
-    card *deck = (card*)malloc(MAX * sizeof(card)); // allocates memory for the entire deck of 108 cards
-
-    while((shuffle != 1) && (shuffle != 2)) {
-        printf("Press 1 to shuffle the DOS deck or 2 to load a deck from a file: ");
-        scanf(" %d", &shuffle);
-        if(shuffle == 1) {
-            deck = createDeck(); //Creates deck from scratch
-            shuffleDeck(deck); //Shuffles deck
-            printf("The deck has been shuffled and dealt\n");
+bool validPlay(card centerCard, int input1, int input2, hand* currentHand) {
+    card card1, card2;
+    hand tempHand = *currentHand;
+    
+    for (int i = 1 ; i < currentHand->numCards + 1; i++) {
+        if (i == input1)
+            card1 = *tempHand.playerHand;
+        if (i == input2)
+            card2 = *tempHand.playerHand;
+        tempHand.playerHand = tempHand.playerHand->pt;
+    }
+    
+    // 1 input
+    if (input2 < 0) {
+        if(card1.value == centerCard.value || strcmp(card1.action, "AnyNumber") == 1 || strcmp(centerCard.action, "AnyNumber") == 1) {
+            deleteNode(&currentHand->playerHand, input1);
+            return true;
         }
-        if(shuffle == 2) {
-            char filename[100];
-            printf("Enter file name (DosDeck.txt): ");
-            scanf(" %[^\n]s", filename);
-            deck = readDeck(filename); //Reads from file
-            printf("The deck has been loaded and dealt\n");
+        else {
+            print(&card1);
+            printf("Invalid play.\n");
+            return false;
         }
     }
-    return deck;
-}
-
-int init_players(void) {
-    int numPlayers = 0;
-    while(numPlayers < 1 || numPlayers > MAX_NUM_PLAYERS) {
-        printf("Let's play a game of DOS\nEnter number of players: ");
-        scanf("%d", &numPlayers);
+    
+    // 2 inputs
+    else {
+        if(card1.value + card2.value == centerCard.value || strcmp(card1.action, "AnyNumber") == 1 || strcmp(card2.action, "AnyNumber") == 1) {
+            deleteNode(&currentHand->playerHand, input1);
+            deleteNode(&currentHand->playerHand, input2);
+            return true;
+        }
+        else {
+            print(&card1);
+            printf("Invalid play.\n");
+            return false;
+        }
     }
-    return numPlayers;
+    
+    // THIS FUNCTION NEEDS TO BE POLISHED
 }
 
 void playerTurn(hand* currentHand, hand* centerRow, card* deck) {
-    int cardNumToPlay;
+    int userInput;
+    int userInput2;
     card activeCenterCard;
     
     //Prints discard card and player's hand
@@ -71,18 +75,45 @@ void playerTurn(hand* currentHand, hand* centerRow, card* deck) {
     for (int i = 0 ; i < centerRow->numCards ; i++) {
         activeCenterCard = *centerRow->playerHand;
         printf("How many cards do you want to play on %d %s: ", activeCenterCard.value, activeCenterCard.color);
+        scanf("%d", &userInput);
+        
+        // chooses what card
+        if(userInput == 1) {
+            printf("Select a card from 1-%d: ", currentHand->numCards);
+            scanf("%d", &userInput);
+            validPlay(*centerRow->playerHand, userInput, -1, currentHand);
+        }
+        else if (userInput == 2) {
+            printf("Select 2 cards from 1-%d: ", currentHand->numCards);
+            scanf("%d, %d", &userInput, &userInput2);
+            validPlay(*centerRow->playerHand, userInput, userInput2, currentHand);
+        }
+        
+        
+        // NEEDS LOGIC HERE
+        
+        activeCenterCard = *activeCenterCard.pt;
     }
+    
+    // AND LOGIC HERE
+    
+    
+    // THIS STUFF IS FOR WHEN THE USER DOES NOT PLAY A CARD, AND HAS TO DRAW
+    drawCard(currentHand, &deck);
+    print(currentHand->playerHand);
+    printf("You drew a card. Press 1 to make a match or 0 to discard: ");
+    scanf("%d", &userInput);
+    
 }
-
-
 
 //THE MAIN FUNCTION
 int main(void) {
-    int numCardsRemaining = MAX;
-    int numCardsDiscarded = 0;
-    card cardSelectedByUser;
     bool winner = false;
     int playerToAct = 0;
+    hand centerRow;
+    
+    centerRow.playerHand = NULL;
+    centerRow.playerHand = 0;
     
     //set up players and the deck
     int numPlayers = init_players();
@@ -93,27 +124,22 @@ int main(void) {
     for(int i = 0 ; i < numPlayers ; i++) {
         PlayersHands[i].points = 0;
         PlayersHands[i].playerNum = i + 1;
-    }
-    
-    //Deals the cards to the players
-    for(int i = 0 ; i < numPlayers ; i++) {
         PlayersHands[i].playerHand = NULL;
         PlayersHands[i].numCards = 0;
     }
     for(int i = 0 ; i < HANDSIZE; i++)
         for(int j = 0 ; j < numPlayers ; j++)
-            drawCard(&PlayersHands[j], deck); //function "deals" cards to each player in alternating order by taking top card off the deck and adding it to their hand
+            drawCard(&PlayersHands[j], &deck); //function "deals" cards to each player in alternating order by taking top card off the deck and adding it to their hand
     
     //Turns over first 2 cards
-    hand centerRow;
     for(int i = 0 ; i < 2 ; i++)
-        drawCard(&centerRow, deck);
+        drawCard(&centerRow, &deck);
     
     //Start of Gameplay
     while(!winner) {
         playerTurn(&PlayersHands[playerToAct], &centerRow, deck);
         
-        
+        // NEED MORE GAMEPLAY LOGIC HERE
         
     }
 
