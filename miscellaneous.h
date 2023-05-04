@@ -2,7 +2,7 @@
 //  miscellaneous.h
 //  Final Project
 //
-//  Created by Dominick D’Emilio on 4/22/22.
+//  Created by Carson Brofft on 5/3/23.
 //
 
 #ifndef miscellaneous_h
@@ -20,7 +20,7 @@ typedef struct card_s {
     char color[10];
     int value;
     char action[15];
-    struct card_s *pt;
+    struct card_s* pt;
 } card;
 
 //created struct for player hands
@@ -28,14 +28,14 @@ typedef struct hand_s {
     int numCards;
     int playerNum;
     int points;
-    card *playerHand;
+    card* playerHand;
 } hand;
 
 //EDIT LINKED LIST FUNCTIONS
 //adds card to the front of the linked list, takes linked list and a card as input, no output necessary
-void addNewNodeToBeginning(card ** head, card temp) {
-    card * new_node;   //temp card
-    new_node = (card *)malloc(sizeof(card));   //allocates memory for new card node
+void addNewNodeToBeginning(card** head, card temp) {
+    card* new_node;   //temp card
+    new_node = (card*)malloc(sizeof(card));   //allocates memory for new card node
     new_node->value = temp.value;
     strcpy(new_node->action, temp.action);   //copy data
     strcpy(new_node->color, temp.color);
@@ -44,11 +44,11 @@ void addNewNodeToBeginning(card ** head, card temp) {
 }
 
 //adds card to the end of the linked list; takes linked list and a card as input, no output necessary
-void addNewNodeToEnd(card * head, card temp) {
-    card * current = head;   //temp card
+void addNewNodeToEnd(card* head, card temp) {
+    card* current = head;   //temp card
     while (current->pt != NULL)
         current = current->pt;
-    current->pt = (card *) malloc(sizeof(card));   //allocates memory for new card node
+    current->pt = (card*)malloc(sizeof(card));   //allocates memory for new card node
     current->pt->value = temp.value;
     strcpy(current->pt->action, temp.action);   //copy data
     strcpy(current->pt->color, temp.color);
@@ -56,9 +56,9 @@ void addNewNodeToEnd(card * head, card temp) {
 }
 
 //deletes first card from linked list; receives linked list as input; returns head pointer to that list without the first node
-card deleteFirstNode(card ** head) {
+card deleteFirstNode(card** head) {
     card ret;
-    card * next_node = NULL;
+    card* next_node = NULL;
     next_node = (*head)->pt;
     ret.value = (*head)->value;
     strcpy(ret.action, (*head)->action);
@@ -69,16 +69,16 @@ card deleteFirstNode(card ** head) {
 }
 
 //deletes card from any location in linked list; receives linked list and the specific position of a card to be deleted; no output necessary
-void deleteNode(card **head, int pos) {
+void deleteNode(card** head, int pos) {
     card* temp = *head;   //temp pointer to head node
     card* prev = NULL;
-    if(pos == 0) {
+    if (pos == 0) {
         *head = temp->pt;
         temp->pt = NULL;
         free(temp); //frees memory from deck
         return;
     }
-    for(int i = 0 ; i < pos ; i++) {
+    for (int i = 0; i < pos; i++) {
         prev = temp;
         temp = temp->pt;
     }
@@ -89,28 +89,28 @@ void deleteNode(card **head, int pos) {
 //DECK FUNCTIONS
 //function initializes the 108-card deck from scratch; no input; returns head pointer to the linked list of the deck
 card* createDeck(void) {
-    card *temp = (card*)malloc(sizeof(card)); //amount of memory necessary for one card
+    card* temp = (card*)malloc(sizeof(card)); //amount of memory necessary for one card
     temp->pt = NULL;
-    card *head = NULL;
-    
+    card* head = NULL;
+
     //adds card information to each card
-    for(int i = 0 ; i < 4 ; i++) {
-        for(int j = 0 ; j < 24 ; j++) {
-            switch(i) {
-                case 0:
-                    strcpy(temp->color, "Red");
-                    break;
-                case 1:
-                    strcpy(temp->color, "Yellow");
-                    break;
-                case 2:
-                    strcpy(temp->color, "Green");
-                    break;
-                case 3:
-                    strcpy(temp->color, "Blue");
-                    break;
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 24; j++) {
+            switch (i) {
+            case 0:
+                strcpy(temp->color, "Red");
+                break;
+            case 1:
+                strcpy(temp->color, "Yellow");
+                break;
+            case 2:
+                strcpy(temp->color, "Green");
+                break;
+            case 3:
+                strcpy(temp->color, "Blue");
+                break;
             }
-            
+
             if (j < 3)
                 temp->value = 1;
             else if (j < 6)
@@ -131,22 +131,22 @@ card* createDeck(void) {
                 temp->value = 10;
             else
                 temp->value = 11;
-            
+
             if (temp->value == 11)
                 strcpy(temp->action, "AnyNumber");
             else
                 strcpy(temp->action, "none");
 
-            if(head == NULL)
+            if (head == NULL)
                 head = temp;
             else
                 addNewNodeToBeginning(&head, *temp);
             temp = (card*)malloc(sizeof(card));   //allocates memory for next card in deck
         }
     }
-    
+
     //dos
-    for(int i = 0 ; i < 12 ; i++) {
+    for (int i = 0; i < 12; i++) {
         strcpy(temp->color, "Black");
         temp->value = 2;
         strcpy(temp->action, "AnyColor");
@@ -156,14 +156,14 @@ card* createDeck(void) {
     return head;   //pointer to first card in the deck
 }
 
-//function reads the 108-card deck from a file given an input of string (UnoDeck.txt); returns head pointer to the linked list for the deck
+//function reads the 108-card deck from a file given an input of string (CardDeck.txt); returns head pointer to the linked list for the deck
 card* readDeck(char str[]) {
-    card *head = NULL, *tail = NULL, *temp = (card*)malloc(sizeof(card));
-    FILE *inp = fopen(str, "r");
-    if(inp == NULL)
+    card* head = NULL, * tail = NULL, * temp = (card*)malloc(sizeof(card));
+    FILE* inp = fopen(str, "r");
+    if (inp == NULL)
         printf("Error finding file\n");
-    while(fscanf(inp, " %s %d %s", temp->color, &temp->value, temp->action) != EOF) {   //scans data from file named by str[] ("UnoDeck.txt" usually)
-        if(head == NULL)
+    while (fscanf(inp, " %s %d %s", temp->color, &temp->value, temp->action) != EOF) {   //scans data from file named by str[] ("CardDeck.txt" usually)
+        if (head == NULL)
             head = temp;
         else
             tail->pt = temp;
@@ -176,22 +176,22 @@ card* readDeck(char str[]) {
 }
 
 //shuffles the deck of cards to a random order, receives head pointer and number of cards to be shuffled as input, no output necessary
-void shuffleDeck(card *head) {
-    card *memory[108];   //creates temp array to help copy data in deck
+void shuffleDeck(card* head) {
+    card* memory[108];   //creates temp array to help copy data in deck
     int i = 0;
-    while(head != NULL) {
+    while (head != NULL) {
         memory[i] = head;
         i++;
         head = head->pt;
     }
     card t;
     srand((int)time(0));
-    for(int i = 0 ; i < 108 ; i++) {
+    for (int i = 0; i < 108; i++) {
         int j = rand() % 108;   //picks random card position in deck
         strcpy(t.color, memory[i]->color);
         t.value = memory[i]->value;
         strcpy(t.action, memory[i]->action);
-        if(i != j) {
+        if (i != j) {
             strcpy(memory[i]->color, memory[j]->color);
             strcpy(memory[i]->action, memory[j]->action);
         }
@@ -203,22 +203,22 @@ void shuffleDeck(card *head) {
 }
 
 //prints the cards with graphics; receives pointer to a card and continues to print the cards after the selected card until the pointer is NULL
-void print(card *head){
-    while(head != NULL) {
+void print(card* head) {
+    while (head != NULL) {
         printf("\n┌─────────┐\n");
-        if(head->value == 11)
+        if (head->value == 11)
             printf("│%9s│\n│%9s│\n", head->color, head->action);
         else
             printf("│%9s│\n│ %2d      │\n", head->color, head->value);
         printf("└─────────┘");
-        
+
         head = head->pt;
     }
     printf("\n");
 }
 
 //draws a card from the deck, receives deck, player's hand, & number of cards in draw pile as input. No output necessary
-void drawCard(hand* array, card **deck) {
+void drawCard(hand* array, card** deck) {
     array->numCards++;   //number of cards in player's hand increases by 1
     addNewNodeToBeginning(&array->playerHand, **deck);   //copy the top card in the deck to player's hand
     deleteFirstNode(deck);   //removes top card from the deck
@@ -226,17 +226,17 @@ void drawCard(hand* array, card **deck) {
 
 card* init_deck(void) {
     int shuffle = 0;
-    card *deck = (card*)malloc(108 * sizeof(card)); // allocates memory for the entire deck of 108 cards
+    card* deck = (card*)malloc(108 * sizeof(card)); // allocates memory for the entire deck of 108 cards
 
-    while((shuffle != 1) && (shuffle != 2)) {
+    while ((shuffle != 1) && (shuffle != 2)) {
         printf("Press 1 to shuffle the DOS deck or 2 to load a deck from a file: ");
         scanf(" %d", &shuffle);
-        if(shuffle == 1) {
+        if (shuffle == 1) {
             deck = createDeck(); //Creates deck from scratch
             shuffleDeck(deck); //Shuffles deck
             printf("The deck has been shuffled and dealt\n");
         }
-        if(shuffle == 2) {
+        if (shuffle == 2) {
             char filename[100];
             printf("Enter file name (DosDeck.txt): ");
             scanf(" %[^\n]s", filename);
@@ -249,7 +249,7 @@ card* init_deck(void) {
 
 int init_players(void) {
     int numPlayers = 0;
-    while(numPlayers < 1 || numPlayers > 6) {
+    while (numPlayers < 1 || numPlayers > 6) {
         printf("Let's play a game of DOS\nEnter number of players: ");
         scanf("%d", &numPlayers);
     }
