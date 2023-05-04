@@ -88,7 +88,7 @@ void deleteNode(card **head, int pos) {
 
 //DECK FUNCTIONS
 //function initializes the 108-card deck from scratch; no input; returns head pointer to the linked list of the deck
-card* initializeDeck(void) {
+card* createDeck(void) {
     card *temp = (card*)malloc(sizeof(card)); //amount of memory necessary for one card
     temp->pt = NULL;
     card *head = NULL;
@@ -176,8 +176,8 @@ card* readDeck(char str[]) {
 }
 
 //shuffles the deck of cards to a random order, receives head pointer and number of cards to be shuffled as input, no output necessary
-void shuffleDeck(card *head, int remaining) {
-    card *memory[remaining];   //creates temp array to help copy data in deck
+void shuffleDeck(card *head) {
+    card *memory[108];   //creates temp array to help copy data in deck
     int i = 0;
     while(head != NULL) {
         memory[i] = head;
@@ -186,8 +186,8 @@ void shuffleDeck(card *head, int remaining) {
     }
     card t;
     srand((int)time(0));
-    for(int i = 0 ; i < remaining ; i++) {
-        int j = rand() % remaining;   //picks random card position in deck
+    for(int i = 0 ; i < 108 ; i++) {
+        int j = rand() % 108;   //picks random card position in deck
         strcpy(t.color, memory[i]->color);
         t.value = memory[i]->value;
         strcpy(t.action, memory[i]->action);
@@ -206,14 +206,13 @@ void shuffleDeck(card *head, int remaining) {
 void print(card *head){
     while(head != NULL) {
         printf("\n┌─────────┐\n");
-        if(head->value > 12)
-            printf("│%9s│\n│         │\n", head->action);
-        else if(head->value > 9)
+        if(head->value == 11)
             printf("│%9s│\n│%9s│\n", head->color, head->action);
         else
-            printf("│%9s│\n│ %d       │\n", head->color, head->value);
-        head = head->pt;
+            printf("│%9s│\n│ %2d      │\n", head->color, head->value);
         printf("└─────────┘");
+        
+        head = head->pt;
     }
     printf("\n");
 }
