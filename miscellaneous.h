@@ -217,4 +217,43 @@ void print(card *head){
     printf("\n");
 }
 
+//draws a card from the deck, receives deck, player's hand, & number of cards in draw pile as input. No output necessary
+void drawCard(hand* array, card **deck) {
+    array->numCards++;   //number of cards in player's hand increases by 1
+    addNewNodeToBeginning(&array->playerHand, **deck);   //copy the top card in the deck to player's hand
+    deleteFirstNode(deck);   //removes top card from the deck
+}
+
+card* init_deck(void) {
+    int shuffle = 0;
+    card *deck = (card*)malloc(MAX * sizeof(card)); // allocates memory for the entire deck of 108 cards
+
+    while((shuffle != 1) && (shuffle != 2)) {
+        printf("Press 1 to shuffle the DOS deck or 2 to load a deck from a file: ");
+        scanf(" %d", &shuffle);
+        if(shuffle == 1) {
+            deck = createDeck(); //Creates deck from scratch
+            shuffleDeck(deck); //Shuffles deck
+            printf("The deck has been shuffled and dealt\n");
+        }
+        if(shuffle == 2) {
+            char filename[100];
+            printf("Enter file name (DosDeck.txt): ");
+            scanf(" %[^\n]s", filename);
+            deck = readDeck(filename); //Reads from file
+            printf("The deck has been loaded and dealt\n");
+        }
+    }
+    return deck;
+}
+
+int init_players(void) {
+    int numPlayers = 0;
+    while(numPlayers < 1 || numPlayers > MAX_NUM_PLAYERS) {
+        printf("Let's play a game of DOS\nEnter number of players: ");
+        scanf("%d", &numPlayers);
+    }
+    return numPlayers;
+}
+
 #endif /* miscellaneous_h */
