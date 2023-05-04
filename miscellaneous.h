@@ -226,7 +226,7 @@ void drawCard(hand* array, card **deck) {
 
 card* init_deck(void) {
     int shuffle = 0;
-    card *deck = (card*)malloc(MAX * sizeof(card)); // allocates memory for the entire deck of 108 cards
+    card *deck = (card*)malloc(108 * sizeof(card)); // allocates memory for the entire deck of 108 cards
 
     while((shuffle != 1) && (shuffle != 2)) {
         printf("Press 1 to shuffle the DOS deck or 2 to load a deck from a file: ");
@@ -249,7 +249,7 @@ card* init_deck(void) {
 
 int init_players(void) {
     int numPlayers = 0;
-    while(numPlayers < 1 || numPlayers > MAX_NUM_PLAYERS) {
+    while(numPlayers < 1 || numPlayers > 6) {
         printf("Let's play a game of DOS\nEnter number of players: ");
         scanf("%d", &numPlayers);
     }
